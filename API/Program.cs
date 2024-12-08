@@ -24,8 +24,6 @@ builder.Services.AddApplicationServices(builder.Configuration);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.UseMiddleware<ExceptionMiddleware>();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -35,14 +33,21 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseDefaultFiles();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    ServeUnknownFileTypes = true, // Allow serving of unknown file types
+    DefaultContentType = "image/png" // Adjust as necessary
+});
 app.UseCors(x=>x.AllowAnyHeader().AllowAnyOrigin().AllowCredentials().AllowAnyMethod()
 .WithOrigins("http://localhost:3000"));
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapFallbackToController("Index","Fallback");
+app.MapFallbackToFile("index.html");
+
+// app.MapFallbackToController("Index","Fallback");
 
 
 // app.UseCors(opt=>opt.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");

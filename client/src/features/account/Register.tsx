@@ -141,7 +141,7 @@ export default function Register() {
                 </span>
               </Typography>
             </Box>          
-    </Container>
+          </Container>
             </>
   );
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Writers;
 
 namespace API.Extensions;
     public static class ApplicationServiceExtensions
@@ -48,6 +49,10 @@ namespace API.Extensions;
             services.AddScoped<IOrderRepository,OrderRepository>();
             services.AddScoped<IUnitOfWork,UnitOfWork>();
             services.AddTransient<TokenService>();
+            services.AddDbContext<StoreContext>(opt=>
+            {
+            opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+            }); 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(opt=>{
                 opt.TokenValidationParameters = new TokenValidationParameters{
@@ -59,15 +64,16 @@ namespace API.Extensions;
                 };
             })
             ;
-            services.AddAuthorization();
-            services.AddDbContext<StoreContext>(opt=>
-            {
-            opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
-            }); 
             services.AddIdentityCore<User>(opt=>
             opt.User.RequireUniqueEmail = true
             )
             .AddRoles<Role>()
             .AddEntityFrameworkStores<StoreContext>();
+
+            services.AddAuthorization();
+            services.AddAuthorizationBuilder()
+            .AddPolicy("RequireAdmin",policy=>policy.RequireRole("Admin"))
+            .AddPolicy("StockManager",policy=>policy.RequireRole("Admin","StockManager"));
+            
         }
     }

@@ -11,6 +11,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@arcgis/core": "^4.31.6",
+    "@arcgis/map-components": "^4.31.6",
+    "@arcgis/map-components-react": "^4.31.6",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@faker-js/faker": "^9.0.0",

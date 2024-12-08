@@ -18,8 +18,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 namespace API.Controllers
 {
     public class AccountController(UserManager<User> userManager, 
-    TokenService tokenService ,IUnitOfWork unitOfWork) : BaseApiController
+    TokenService tokenService ,IUnitOfWork unitOfWork,RoleManager<Role> roleManager) : BaseApiController
     {
+
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
@@ -94,6 +95,41 @@ namespace API.Controllers
                 basket = Basket!=null?unitOfWork.BasketRepository.ConvertBasketDto(Basket):null,
             };
 
+        }
+
+        [Authorize(Policy="RequireAdmin")]
+        [HttpPost("create-role")]
+        public async Task<ActionResult> CreateRole(string role)
+        {
+            // var username = User.Identity.Name;
+            // var user = await userManager.Users.FirstAsync(x=>x.UserName == username);
+            // var roles = await userManager.GetRolesAsync(user);
+            // if(roles.Any(r => r.Equals(role, StringComparison.OrdinalIgnoreCase)))
+
+            var roleExists = await roleManager.RoleExistsAsync(role);
+            if(roleExists)
+            {
+                return BadRequest(new ProblemDetails{Title="Role Already exists"});
+            }
+            await roleManager.CreateAsync(new Role{Name=role});
+            return Created();
+        }
+
+        [Authorize(Policy="RequireAdmin")]
+        [HttpDelete("delete-role")]
+        public async Task<ActionResult> DeleteRole(string rolename)
+        {
+            var role = await roleManager.FindByNameAsync(rolename);
+            if(role == null)
+            {
+                return NotFound();
+            }
+            if(role.Name == "Admin" || role.Name == "Member")
+            {
+                return BadRequest(new ProblemDetails{ Title="Admin or Member cannot be deleted"});
+            }
+            await roleManager.DeleteAsync(role);
+            return Ok();
         }
 
         [Authorize]

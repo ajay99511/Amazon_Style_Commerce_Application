@@ -20,7 +20,7 @@ export default function CheckBoxGroup({items,checked,onChange}:Props)
     }
     return(
         <FormGroup >
-            {items.map(
+            {items && items.map(
               (item)=>(
                 <FormControlLabel 
                 control={<Checkbox 

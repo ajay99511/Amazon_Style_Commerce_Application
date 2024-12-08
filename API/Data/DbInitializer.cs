@@ -1,6 +1,7 @@
 using System.Text.Json;
 using API.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
@@ -217,7 +218,6 @@ public static class DbInitializer
         {
             context.Products.Add(product);
         }
-
         if(!userManager.Users.Any())
         {
             var user = new User{
