@@ -4,12 +4,14 @@ using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using API.RequestHelpers;
+using ClosedXML.Excel;
+using Microsoft.Data.Sqlite; // for SQLite
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    public class ProductsController(StoreContext _context,IUnitOfWork unitOfWork):BaseApiController
+    public class ProductsController(StoreContext _context,IUnitOfWork unitOfWork, IConfiguration configuration):BaseApiController
     {
 
 
